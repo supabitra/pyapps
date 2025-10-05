@@ -122,6 +122,17 @@ class t_appointment(db.Model):
 
 
 #####################################################################
+# @app.context_processor
+# def test():
+#     return "1"
+# def utility_processor():
+#     def test():
+#         return f"1"
+
+#     return dict(test=test)
+
+
+#####################################################################
 # Home
 #####################################################################
 @app.route("/")
@@ -138,7 +149,11 @@ def home():
             # ------------------------------------------------------------
             db.session.commit()
             # ------------------------------------------------------------
-    return render_template("home.html")
+            if "username" not in session:
+                session["user_type"] = 0
+            # ------------------------------------------------------------
+            # user_type=0 if "user_type" not in session else session["user_type"]
+    return render_template("home.html", user_type=session["user_type"])
     # return jsonify(message="Hello, World!!")
     # return "Hello, World!! <h1> This is a heading... </h1>"
     # return render_template("home.html", content=["Flask", "Django", "FastAPI"])
@@ -154,18 +169,19 @@ def doctor_root():
         button_name = request.form.get("action")
         if button_name == "home":  # if Logout button is clicked
             flash("You have been logged out!", "info")
-            return render_template("home.html")
+            return render_template("home.html", user_type=session["user_type"])
         elif button_name == "manageDoctor":  # Login button is clicked
             # return render_template("patient_manage.html")
             return redirect(url_for("doctor_manage"))
             # return render_template("patient_manage.html")
         elif button_name == "bookAppointment":  # Login button is clicked
-            return render_template("view.html")
+            return render_template("view.html", user_type=session["user_type"])
         elif button_name == "cancelAppointment":  # if Logout button is clicked
             # ------------------------------------------------------------
             flash("Doctor selected!", "info")
             return render_template(
                 "doctor_appointment_cancel.html",
+                user_type=session["user_type"],
                 heading=(
                     "Appointment ID",
                     "Doctor ID",
@@ -200,6 +216,7 @@ def doctor_root():
             flash("Doctor selected!", "info")
             return render_template(
                 "doctor_appointment_complete.html",
+                user_type=session["user_type"],
                 appointmentHidden=False,
                 notesHidden=True,
                 values=None,
@@ -234,7 +251,10 @@ def doctor_root():
             )
     else:  # if Login page is accessed using GET method, i.e., clicking on Login link
         flash("Choose options to proceed!", "info")
-        return render_template("doctor_root.html")
+        return render_template(
+            "doctor_root.html",
+            user_type=session["user_type"],
+        )
 
 
 #####################################################################
@@ -254,6 +274,7 @@ def doctor_manage():
                 flash("User data retrieved from DB")
                 return render_template(
                     "doctor_update.html",
+                    user_type=session["user_type"],
                     values=found_user,
                     dataDepartment=t_department.query.all(),
                 )
@@ -275,24 +296,32 @@ def doctor_manage():
                 flash("User data saved successfully!!")
                 return render_template(
                     "doctor_update.html",
+                    user_type=session["user_type"],
                     values=found_user,
                     dataDepartment=t_department.query.all(),
                 )
             else:  # Not logged in
                 flash("Data NOT Found in DB! Contact Admin!", "info")
-                return render_template("doctor_update.html")
+                return render_template(
+                    "doctor_update.html",
+                    user_type=session["user_type"],
+                )
     else:  # if Patient Manage Login page is accessed using GET method, i.e., clicking on Manage Patient link
         found_user = t_doctor.query.filter_by(doctor_id=session["username"]).first()
         if found_user:
             flash("User data retrieved from DB")
             return render_template(
                 "doctor_update.html",
+                user_type=session["user_type"],
                 values=found_user,
                 dataDepartment=t_department.query.all(),
             )
         else:  # Not logged in
             flash("Data NOT Found in DB! Contact Admin!", "info")
-            return render_template("doctor_update.html")
+            return render_template(
+                "doctor_update.html",
+                user_type=session["user_type"],
+            )
 
 
 #####################################################################
@@ -313,6 +342,7 @@ def doctor_appointment():
             flash("Appointment retrieved!", "info")
             return render_template(
                 "doctor_appointment_complete.html",
+                user_type=session["user_type"],
                 appointmentHidden=True,
                 notesHidden=False,
                 values=found_user,
@@ -333,6 +363,7 @@ def doctor_appointment():
             flash("Appointment completed!", "info")
             return render_template(
                 "doctor_appointment_complete.html",
+                user_type=session["user_type"],
                 appointmentHidden=True,
                 notesHidden=False,
                 values=found_user,
@@ -352,6 +383,7 @@ def doctor_appointment():
             flash("Appointment booked!", "info")
             return render_template(
                 "patient_appointment_cancel.html",
+                user_type=session["user_type"],
                 appointmentHidden=True,
                 heading=(
                     "Appointment ID",
@@ -388,6 +420,7 @@ def doctor_appointment():
             flash("Booking an appointment!", "info")
             return render_template(
                 "patient_appointment_book.html",
+                user_type=session["user_type"],
                 selectedDepartment=None,
                 selectedDoctor=None,
                 departmentHidden=False,
@@ -422,10 +455,15 @@ def doctor_appointment():
         found_user = t_patient.query.filter_by(patient_id=session["username"]).first()
         if found_user:
             flash("User data retrieved from DB")
-            return render_template("patient_update.html", values=found_user)
+            return render_template(
+                "patient_update.html", user_type=session["user_type"], values=found_user
+            )
         else:  # Not logged in
             flash("Data NOT Found in DB! Contact Admin!", "info")
-            return render_template("patient_update.html")
+            return render_template(
+                "patient_update.html",
+                user_type=session["user_type"],
+            )
 
 
 #####################################################################
@@ -437,7 +475,10 @@ def patient_root():
         button_name = request.form.get("action")
         if button_name == "home":  # if Logout button is clicked
             flash("You have been logged out!", "info")
-            return render_template("home.html")
+            return render_template(
+                "home.html",
+                user_type=session["user_type"],
+            )
         elif button_name == "managePatient":  # Login button is clicked
             # return render_template("patient_manage.html")
             return redirect(url_for("patient_manage"))
@@ -446,6 +487,7 @@ def patient_root():
             flash("Booking an appointment!", "info")
             return render_template(
                 "patient_appointment_book.html",
+                user_type=session["user_type"],
                 selectedDepartment=None,
                 selectedDoctor=None,
                 departmentHidden=False,
@@ -478,6 +520,7 @@ def patient_root():
             flash("Doctor selected!", "info")
             return render_template(
                 "patient_appointment_cancel.html",
+                user_type=session["user_type"],
                 heading=(
                     "Appointment ID",
                     "Doctor ID",
@@ -509,7 +552,10 @@ def patient_root():
             )
     else:  # if Login page is accessed using GET method, i.e., clicking on Login link
         flash("Choose options to proceed!", "info")
-        return render_template("patient_root.html")
+        return render_template(
+            "patient_root.html",
+            user_type=session["user_type"],
+        )
 
 
 #####################################################################
@@ -527,7 +573,11 @@ def patient_manage():
             ).first()
             if found_user:
                 flash("User data retrieved from DB")
-                return render_template("patient_update.html", values=found_user)
+                return render_template(
+                    "patient_update.html",
+                    user_type=session["user_type"],
+                    values=found_user,
+                )
         # ------------------------------------------------------------
         elif button_name == "save":  # if Logout button is clicked
             found_user = t_patient.query.filter_by(
@@ -544,18 +594,30 @@ def patient_manage():
                 # ------------------------------------------------------------
                 db.session.commit()
                 flash("User data saved successfully!!")
-                return render_template("patient_update.html", values=found_user)
+                return render_template(
+                    "patient_update.html",
+                    user_type=session["user_type"],
+                    values=found_user,
+                )
             else:  # Not logged in
                 flash("Data NOT Found in DB! Contact Admin!", "info")
-                return render_template("patient_update.html")
+                return render_template(
+                    "patient_update.html",
+                    user_type=session["user_type"],
+                )
     else:  # if Patient Manage Login page is accessed using GET method, i.e., clicking on Manage Patient link
         found_user = t_patient.query.filter_by(patient_id=session["username"]).first()
         if found_user:
             flash("User data retrieved from DB")
-            return render_template("patient_update.html", values=found_user)
+            return render_template(
+                "patient_update.html", user_type=session["user_type"], values=found_user
+            )
         else:  # Not logged in
             flash("Data NOT Found in DB! Contact Admin!", "info")
-            return render_template("patient_update.html")
+            return render_template(
+                "patient_update.html",
+                user_type=session["user_type"],
+            )
 
 
 #####################################################################
@@ -571,6 +633,7 @@ def patient_appointment():
             flash("Department selected!", "info")
             return render_template(
                 "patient_appointment_book.html",
+                user_type=session["user_type"],
                 selectedDepartment=request.form.get("selectDepartment"),
                 selectedDoctor=None,
                 departmentHidden=True,
@@ -596,6 +659,7 @@ def patient_appointment():
             flash("Doctor selected!", "info")
             return render_template(
                 "patient_appointment_book.html",
+                user_type=session["user_type"],
                 selectedDepartment=request.form.get("selectDepartment"),
                 selectedDoctor=request.form.get("selectDoctor"),
                 departmentHidden=True,
@@ -670,6 +734,7 @@ def patient_appointment():
             flash("Appointment booked!", "info")
             return render_template(
                 "patient_appointment_book.html",
+                user_type=session["user_type"],
                 departmentHidden=True,
                 doctorHidden=True,
                 appointmentHidden=True,
@@ -717,6 +782,7 @@ def patient_appointment():
             flash("Appointment booked!", "info")
             return render_template(
                 "patient_appointment_cancel.html",
+                user_type=session["user_type"],
                 appointmentHidden=True,
                 heading=(
                     "Appointment ID",
@@ -753,6 +819,7 @@ def patient_appointment():
             flash("Booking an appointment!", "info")
             return render_template(
                 "patient_appointment_book.html",
+                user_type=session["user_type"],
                 selectedDepartment=None,
                 selectedDoctor=None,
                 departmentHidden=False,
@@ -787,10 +854,15 @@ def patient_appointment():
         found_user = t_patient.query.filter_by(patient_id=session["username"]).first()
         if found_user:
             flash("User data retrieved from DB")
-            return render_template("patient_update.html", values=found_user)
+            return render_template(
+                "patient_update.html", user_type=session["user_type"], values=found_user
+            )
         else:  # Not logged in
             flash("Data NOT Found in DB! Contact Admin!", "info")
-            return render_template("patient_update.html")
+            return render_template(
+                "patient_update.html",
+                user_type=session["user_type"],
+            )
 
 
 #####################################################################
@@ -827,6 +899,7 @@ def admin_appointment_manage():
             flash("Getting data from DB!", "info")
             return render_template(
                 "appointment_create.html",
+                user_type=session["user_type"],
                 dataDoctor=[
                     [
                         obj.doctor_id,
@@ -878,16 +951,24 @@ def admin_appointment_manage():
                 # ------------------------------------------------------------
                 db.session.commit()
                 flash("User data saved successfully!!")
-                return render_template("doctor_update.html", values=found_user)
+                return render_template(
+                    "doctor_update.html",
+                    user_type=session["user_type"],
+                    values=found_user,
+                )
             else:  # Not logged in
                 flash("Data NOT Found in DB! Contact Admin!", "info")
-                return render_template("doctor_update.html")
+                return render_template(
+                    "doctor_update.html",
+                    user_type=session["user_type"],
+                )
         # ------------------------------------------------------------
         if button_name == "selectDepartment":  # if Logout button is clicked
             # ------------------------------------------------------------
             flash("Department selected!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 selectedDepartment=request.form.get("selectDepartment"),
                 selectedDoctor=None,
                 departmentHidden=True,
@@ -914,6 +995,7 @@ def admin_appointment_manage():
             flash("Doctor selected!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 selectedDepartment=request.form.get("selectDepartment"),
                 selectedDoctor=request.form.get("selectDoctor"),
                 departmentHidden=True,
@@ -993,6 +1075,7 @@ def admin_appointment_manage():
             flash("Appointment booked!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 departmentHidden=True,
                 doctorHidden=True,
                 appointmentHidden=True,
@@ -1054,6 +1137,7 @@ def admin_appointment_manage():
             flash("Appointment booked!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 departmentHidden=True,
                 doctorHidden=True,
                 appointmentHidden=True,
@@ -1101,6 +1185,7 @@ def admin_appointment_manage():
             flash("Appointment booked!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 departmentHidden=True,
                 doctorHidden=True,
                 appointmentHidden=True,
@@ -1148,6 +1233,7 @@ def admin_appointment_manage():
             flash("Appointment booked!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 departmentHidden=True,
                 doctorHidden=True,
                 appointmentHidden=True,
@@ -1187,6 +1273,7 @@ def admin_appointment_manage():
             flash("Booking an appointment!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 selectedDepartment=None,
                 selectedDoctor=None,
                 departmentHidden=False,
@@ -1220,10 +1307,15 @@ def admin_appointment_manage():
         found_user = t_doctor.query.filter_by(doctor_id=session["username"]).first()
         if found_user:
             flash("User data retrieved from DB")
-            return render_template("doctor_update.html", values=found_user)
+            return render_template(
+                "doctor_update.html", user_type=session["user_type"], values=found_user
+            )
         else:  # Not logged in
             flash("Data NOT Found in DB! Contact Admin!", "info")
-            return render_template("doctor_update.html")
+            return render_template(
+                "doctor_update.html",
+                user_type=session["user_type"],
+            )
 
 
 #####################################################################
@@ -1237,7 +1329,10 @@ def login():
             # ------------------------------------------------------------
             if not request.form.get("username") or not request.form.get("password"):
                 flash("Please enter both username and password!")
-                return render_template("login.html")
+                return render_template(
+                    "login.html",
+                    user_type=session["user_type"],
+                )
             # ------------------------------------------------------------
             found_user = t_user.query.filter_by(
                 username=request.form.get("username")
@@ -1247,32 +1342,44 @@ def login():
                 if found_user.password == request.form.get("password"):
                     # ------------------------------------------------------------
                     session["username"] = request.form.get("username")
-                    # session["password"] = request.form.get("password")
-                    session["user_type"] = request.form.get("user_type")
+                    session["user_type"] = found_user.user_type
                     # ------------------------------------------------------------
                     flash("Successfully Logged in!!")
                     return render_template(
                         "login.html",
                         username=session["username"],
+                        user_type=session["user_type"],
                     )
                 else:
                     flash("Password did not match!!")
-                    return render_template("login.html")
+                    return render_template(
+                        "login.html",
+                        user_type=session["user_type"],
+                    )
                 # ------------------------------------------------------------
             else:
                 flash("User not found!!")
-                return render_template("login.html")
+                return render_template(
+                    "login.html",
+                    user_type=session["user_type"],
+                )
                 # ------------------------------------------------------------
         elif button_name == "logout":  # if Logout button is clicked
             session.pop("username", None)
             # session.pop("password", None)
-            session.pop("user_type", None)
+            session["user_type"] = 0
             flash("You have been logged out!", "info")
-            return render_template("login.html")
+            return render_template(
+                "login.html",
+                user_type=session["user_type"],
+            )
         elif button_name == "go_register":  # register button is clicked
             flash("Register for new user!", "info")
             return render_template(
-                "register.html", user_type=3, user_desc="Patient"
+                "register.html",
+                user_type_field=3,
+                user_desc="Patient",
+                # "register.html", user_type=session["user_type"], user_desc="Patient"
             )  # Patient
             # return redirect(url_for("/register"))
             # ------------------------------------------------------------
@@ -1288,6 +1395,7 @@ def login():
                 flash("You are already logged in!", "info")
                 return render_template(
                     "login.html",
+                    user_type=session["user_type"],
                     username=session["username"],
                 )
             # ------------------------------------------------------------
@@ -1297,7 +1405,11 @@ def login():
                 or not request.form.get("password2")
             ):
                 flash("Please enter both username and password!")
-                return render_template("register.html")
+                return render_template(
+                    "register.html",
+                    user_type_field=session["user_type"],
+                    user_type=session["user_type"],
+                )
             # ------------------------------------------------------------
             found_user = t_user.query.filter_by(
                 username=request.form.get("username")
@@ -1310,7 +1422,10 @@ def login():
                     + '" already exists! Try another username.'
                 )
                 return render_template(
-                    "register.html", user_type=user_type, user_desc=user_desc
+                    "register.html",
+                    user_type_field=user_type,
+                    user_type=user_type,
+                    user_desc=user_desc,
                 )
             else:
                 # ------------------------------------------------------------
@@ -1328,12 +1443,15 @@ def login():
                 if request.form.get("password") != request.form.get("password2"):
                     flash("Password not matching with validation!")
                     return render_template(
-                        "register.html", user_type=user_type, user_desc=user_desc
+                        "register.html",
+                        user_type_field=user_type,
+                        user_type=user_type,
+                        user_desc=user_desc,
                     )
                 # ------------------------------------------------------------
                 if "username" not in session:
                     session["username"] = request.form.get("username")
-                    session["user_type"] = request.form.get("password")
+                    session["user_type"] = int(request.form.get("user_type"))
                 # ------------------------------------------------------------
                 table_user = t_user(
                     request.form.get("username"),
@@ -1377,7 +1495,8 @@ def login():
                     )
                     return render_template(
                         "register.html",
-                        user_type=user_type,
+                        user_type_field=user_type,
+                        user_type=session["user_type"],
                         user_desc=user_desc,
                         username="",
                         password="",
@@ -1387,14 +1506,19 @@ def login():
             # ------------------------------------------------------------
             return render_template(
                 "login.html",
+                user_type=session["user_type"],
                 username=session["username"],
             )
             # ------------------------------------------------------------
     else:  # if Login page is accessed using GET method, i.e., clicking on Login link
         if "username" in session:  # If already logged in
-            username = session["username"]
+            # username = session["username"]
             # flash("Message 1!", "info")
-            return render_template("login.html", username=username)
+            return render_template(
+                "login.html",
+                username=session["username"],
+                user_type=session["user_type"],
+            )
             pass
         else:  # Not logged in
             flash("Enter username & password!", "info")
@@ -1412,11 +1536,15 @@ def admin_root():
         # ------------------------------------------------------------
         if button_name == "home":  # if Logout button is clicked
             flash("You have been logged out!", "info")
-            return render_template("home.html")
+            return render_template(
+                "home.html",
+                user_type=session["user_type"],
+            )
         # ------------------------------------------------------------
         elif button_name == "manageDoctor":  # Login button is clicked
             return render_template(
                 "doctor_select.html",
+                user_type=session["user_type"],
                 heading=(
                     "Doctor ID",
                     "Name",
@@ -1443,6 +1571,7 @@ def admin_root():
         elif button_name == "managePatient":  # Login button is clicked
             return render_template(
                 "patient_select.html",
+                user_type=session["user_type"],
                 heading=(
                     "Patient ID",
                     "Name",
@@ -1469,6 +1598,7 @@ def admin_root():
         elif button_name == "manageDepartment":  # Login button is clicked
             return render_template(
                 "department_select.html",
+                user_type=session["user_type"],
                 heading=(
                     "Department ID",
                     "Department Name",
@@ -1491,6 +1621,7 @@ def admin_root():
             flash("Create Appointment for Doctors!", "info")
             return render_template(
                 "appointment_create.html",
+                user_type=session["user_type"],
                 dataDoctor=[
                     [
                         obj.doctor_id,
@@ -1509,6 +1640,7 @@ def admin_root():
             flash("Booking an appointment!", "info")
             return render_template(
                 "admin_appointment_manage.html",
+                user_type=session["user_type"],
                 selectedDepartment=None,
                 selectedDoctor=None,
                 departmentHidden=False,
@@ -1541,7 +1673,10 @@ def admin_root():
         elif button_name == "registerDoc":  # Login button is clicked
             flash("Register for new user!", "info")
             return render_template(
-                "register.html", user_type=2, user_desc="Doctor"
+                "register.html",
+                user_type_field=2,
+                user_type=session["user_type"],
+                user_desc="Doctor",
             )  # Doctor
         # ------------------------------------------------------------
         # ------------------------------------------------------------
@@ -1574,6 +1709,7 @@ def admin_root():
         elif button_name == "viewPatient":  # Login button is clicked
             return render_template(
                 "view.html",
+                user_type=session["user_type"],
                 heading=(
                     "Patient ID",
                     "Name",
@@ -1600,6 +1736,7 @@ def admin_root():
         elif button_name == "viewUser":  # Login button is clicked
             return render_template(
                 "view.html",
+                user_type=session["user_type"],
                 heading=(
                     "User Name",
                     "Password",
@@ -1618,6 +1755,7 @@ def admin_root():
         elif button_name == "viewDepartment":  # Login button is clicked
             return render_template(
                 "view.html",
+                user_type=session["user_type"],
                 heading=(
                     "Department ID",
                     "Name",
@@ -1638,6 +1776,7 @@ def admin_root():
         elif button_name == "viewAppointment":  # Login button is clicked
             return render_template(
                 "view.html",
+                user_type=session["user_type"],
                 heading=(
                     "Appointment ID",
                     "Doctor ID",
@@ -1668,7 +1807,10 @@ def admin_root():
         # ------------------------------------------------------------
     else:  # if Login page is accessed using GET method, i.e., clicking on Login link
         flash("Choose options to proceed!", "info")
-        return render_template("admin_root.html")
+        return render_template(
+            "admin_root.html",
+            user_type=session["user_type"],
+        )
 
 
 #####################################################################
@@ -1686,13 +1828,18 @@ def department_manage():
             ).first()
             if found_user:
                 flash("User data retrieved from DB")
-                return render_template("department_update.html", values=found_user)
+                return render_template(
+                    "department_update.html",
+                    user_type=session["user_type"],
+                    values=found_user,
+                )
         # ------------------------------------------------------------
         elif button_name == "new":  # New button is clicked
             # ------------------------------------------------------------
             flash("Create new Department!", "info")
             return render_template(
                 "department_update.html",
+                user_type=session["user_type"],
                 values={
                     "department_id": "BLANK",
                     "name": "To_Fill",
@@ -1715,6 +1862,7 @@ def department_manage():
                 flash("New Department created successfully!!")
                 return render_template(
                     "department_update.html",
+                    user_type=session["user_type"],
                     values={
                         "department_id": "BLANK",
                         "name": request.form.get("name"),
@@ -1735,7 +1883,11 @@ def department_manage():
                     # ------------------------------------------------------------
                     db.session.commit()
                     flash("Data saved successfully!!")
-                    return render_template("department_update.html", values=found_user)
+                    return render_template(
+                        "department_update.html",
+                        user_type=session["user_type"],
+                        values=found_user,
+                    )
     else:  # if Patient Manage Login page is accessed using GET method, i.e., clicking on Manage Patient link
         found_user = t_patient.query.filter_by(patient_id=session["username"]).first()
 
