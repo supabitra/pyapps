@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Admin's Page...{% endblock %}
+
+{% block content %}
+<form method="POST" action="/admin">
+
+        {% with message = get_flashed_messages() %}
+        {% if message %}
+        <p class="alert alert-warning" role="alert">
+                {{ message }}
+        </p>
+        {% endif %}
+        {% endwith %}
+        <!-------------------------------------------------------------->
+        <!-------------------------------------------------------------->
+        <button name="action" value="home" type="submit" style="font-size:24px">Back to Home Page<i
+                        class="fas fa-home w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <hr>
+        <!-------------------------------------------------------------->
+        <!-------------------------------------------------------------->
+        <button name="action" value="manageDoctor" type="submit" style="font-size:24px">Manage Doctors<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="managePatient" type="submit" style="font-size:24px">Manage Patients<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="manageDepartment" type="submit" style="font-size:24px">Manage Department<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <hr>
+        <!-------------------------------------------------------------->
+        <button name="action" value="createAppointment" type="submit" style="font-size:24px">Create Appointment Slot<i
+                        class="fa fa-bed w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="manageAppointment" type="submit" style="font-size:24px">Manage Appointment<i
+                        class="fa fa-bed w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="registerDoc" type="submit" style="font-size:24px">Register Doctors<i
+                        class="fa fa-bed w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <hr>
+        <!-------------------------------------------------------------->
+        <button name="action" value="viewDoctor" type="submit" style="font-size:24px">View Doctor Details<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="viewPatient" type="submit" style="font-size:24px">View Patient Details<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="viewUser" type="submit" style="font-size:24px">View User Details<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="viewDepartment" type="submit" style="font-size:24px">View Departments<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="viewAppointment" type="submit" style="font-size:24px">View Appointments<i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <!-------------------------------------------------------------->
+</form>
+{% endblock %}

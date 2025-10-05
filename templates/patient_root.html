@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Patient's Page...{% endblock %}
+
+
+
+
+{% block content %}
+<form method="POST" action="/patient">
+
+        {% with message = get_flashed_messages() %}
+        {% if message %}
+        <p class="alert alert-warning" role="alert">
+                {{ message }}
+        </p>
+        {% endif %}
+        {% endwith %}
+        <!-------------------------------------------------------------->
+        <!-------------------------------------------------------------->
+        <button name="action" value="home" type="submit" style="font-size:24px">Back to Home Page <i
+                        class="fas fa-home w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="managePatient" type="submit" style="font-size:24px">Manage Account <i
+                        class="fa-regular fa-circle-user w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="bookAppointment" type="submit" style="font-size:24px">Book Appointment<i
+                        class="fa fa-bed w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <button name="action" value="cancelAppointment" type="submit" style="font-size:24px">View / Cancel Appointment<i
+                        class="fa fa-bed w3-button w3-border w3-jumbo"></i></button>
+        <!-------------------------------------------------------------->
+        <!-------------------------------------------------------------->
+</form>
+{% endblock %}

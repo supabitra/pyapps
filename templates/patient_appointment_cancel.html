@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Book an appointment...{% endblock %}
+
+{% block content %}
+<form method="POST" action="/patient_appointment">
+
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+    <!---------------------------------------------------------------->
+    <!---------------------------------------------------------------->
+    <label {% if appointmentHidden %}hidden{% endif %}>Select Appointment:</label>
+    <select {% if appointmentHidden %}hidden{% endif %} name="selectAppointment" class="form-select" 
+        size="{{ dataAppointment|length if dataAppointment|length < 10 else 10 }}" 
+        aria-label="Multiple select example">
+        {% for row in dataAppointment %}
+        <option value="{{row[0]}}">
+            {{row[3]}}|{{row[4]}}
+        </option>
+        {% endfor %}
+    </select>
+    <button {% if appointmentHidden %}hidden{% endif %} name="action" value="cancelAppointment" type="submit">Cancel
+        Appointment</button>
+    <!-- <button {% if appointmentHidden %}hidden{% endif %} name="action" value="reset" type="submit">Reset</button> -->
+    <!---------------------------------------------------------------->
+    <hr>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                {% for head in heading %}
+                <th scope="col">{{ head }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in dataAppointment %}
+            <tr>
+                {% for cell in row %}
+                <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!------------------------------------------------------------------>
+    <!------------------------------------------------------------------>
+</form>
+{% endblock %}

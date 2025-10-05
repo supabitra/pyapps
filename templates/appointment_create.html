@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Create appointment{% endblock %}
+
+{% block content %}
+<form method="POST" action="/admin_appointment_manage">
+
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <div>
+            <label class="column1">Select Doctor:</label>
+            <select name="select" class="form-select column2" aria-label="Multiple select example" required>
+                {% for row in dataDoctor %}
+                <option value="{{row[0]}}">
+                    {{row[1]}}|{{row[4]}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <!------------------------------------------------------------------>
+        <div>
+            <label class="column1">Appointment Date and Start Time:</label>
+            <input class="column2" type="datetime-local" id="appDate" name="appDate" required>
+        </div>
+        <div>
+            <label class="column1">Appointment Duration in Minutes (Approx.):</label>
+            <input class="column2" type="text" id="appDur" name="appDur" required>
+        </div>
+        <div>
+            <label class="column1">Number of Appointments:</label>
+            <input class="column2" type="text" id="appNum" name="appNum" required>
+        </div>
+        <hr>
+        <button name="action" value="create" type="submit">Create Appointment Slots</button>
+        <!------------------------------------------------------------------>
+        <hr>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    {% for head in heading %}
+                    <th scope="col">{{ head }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in dataAppointment %}
+                <tr>
+                    {% for cell in row %}
+                    <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!------------------------------------------------------------------>
+</form>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Register Page...{% endblock %}
+
+
+
+
+{% block content %}
+<form method="POST" action="/login">
+
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        <div>
+            <label class="column1" for="username">Username:</label>
+            <input class="column2" type="text" id="username" name="username" value="{{username}}" required>
+        </div>
+        <div>
+            <label class="column1" for="password">Password:</label>
+            <input class="column2" type="password" id="password" name="password" value="{{password}}" required>
+        </div>
+        <div>
+            <label class="column1" for="password">Re-write Password:</label>
+            <input class="column2" type="password" id="password2" name="password2" value="" required>
+        </div>
+        <div>
+            <label class="column1">User Type:</label>
+            <label class="column2">{{user_desc}}</label>
+            <input class="column2" type="hidden" id="user_type" name="user_type" value="{{user_type}}" required>
+        </div>
+        <hr>
+        <button name="action" value="register" type="submit">Register</button>
+    </div>
+</form>
+{% endblock %}

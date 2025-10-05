@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Manage Department...{% endblock %}
+
+{% block content %}
+<form method="POST" action="/department_manage">
+
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+    <div hidden>
+        <label>Department ID:</label>
+        <input type="text" id="department_id" name="department_id" value="{{values.department_id}}">
+    </div>
+    <div>
+        <label>Name:</label>
+        <input type="text" id="name" name="name" value="{{values.name}}" required>
+    </div>
+    <div>
+        <label>Description:</label>
+        <input type="text" id="description" name="description" value="{{values.description}}" required>
+    </div>
+    <div>
+        <label>Contact:</label>
+        <input type="text" id="contact" name="contact" value="{{values.contact}}" required>
+    </div>
+    <button name="action" value="save" type="submit">Save</button>
+</form>
+{% endblock %}

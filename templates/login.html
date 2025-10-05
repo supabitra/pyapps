@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Login Page...{% endblock %}
+
+
+
+
+{% block content %}
+<form method="POST" action="/login">
+
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        {% if username %}
+        <p>You are now logged in as <b>"{{ username }}"</b></p>
+        <button name="action" value="logout" type="submit">Logout</button>
+        {% else %}
+        <div>
+            <label class="column1" for="username">Username:</label>
+            <input class="column2" type="text" id="username" name="username">
+        </div>
+        <div>
+            <label class="column1" for="password">Password:</label>
+            <input class="column2" type="password" id="password" name="password">
+        </div>
+        <hr>
+        <button name="action" value="login" type="submit">Login</button>
+        <button name="action" value="go_register" type="submit">Register as patient</button>
+        {% endif %}
+    </div>
+</form>
+{% endblock %}

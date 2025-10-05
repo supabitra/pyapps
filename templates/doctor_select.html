@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Select table{% endblock %}
+
+{% block content %}
+<form method="POST" action="/doctor_manage">
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+
+    <select name="select" class="form-select" aria-label="Multiple select example" required>
+        <option value="" selected disabled>--- Please Select Doctor ---</option>
+        {% for row in dataDoctor %}
+        <option value="{{row[0]}}">
+            {% for cell in row %}
+            <p> {{ cell }}</p>
+            {% endfor %}
+        </option>
+        {% endfor %}
+    </select>
+
+    <button name="action" value="select" type="submit">Select</button>
+</form>
+
+{% endblock %}

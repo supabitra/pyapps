@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Doctor Manage Account...{% endblock %}
+
+{% block content %}
+<form method="POST" action="/doctor_manage">
+
+    {% with message = get_flashed_messages() %}
+    {% if message %}
+    <p class="alert alert-warning" role="alert">
+        {{ message }}
+    </p>
+    {% endif %}
+    {% endwith %}
+
+
+    <div class="row">
+        <div hidden>
+            <label>Doctor ID:</label>
+            <input type="text" id="doctor_id" name="doctor_id" value="{{values.doctor_id}}" required>
+        </div>
+        <div>
+            <label class="column1">Name:</label>
+            <input class="column2" type="text" id="name" name="name" value="{{values.name}}" required>
+        </div>
+        <div>
+            <label class="column1">Designation:</label>
+            <input class="column2" type=" text" id="designation" name="designation" value="{{values.designation}}"
+                required>
+        </div>
+        <div>
+            <label class="column1">Department:</label>
+            <select id="department" name="department" class="form-select column2" aria-label="Multiple select example"
+                required>
+                {% for row in dataDepartment %}
+                <option value="{{row.department_id}}" {% if row.department_id==values.department |int %}selected{% endif
+                    %}>
+                    {{row.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="column1">Qualification:</label>
+            <input class="column2" type=" text" id="qualification" name="qualification" value="{{values.qualification}}"
+                required>
+        </div>
+        <div>
+            <label class="column1">Contact:</label>
+            <input class="column2" type="text" id="contact" name="contact" value="{{values.contact}}" required>
+        </div>
+        <div>
+            <label class="column1">Email:</label>
+            <input class="column2" type="text" id="email" name="email" value="{{values.email}}" required>
+        </div>
+        <hr>
+        <button name="action" value="save" type="submit">Save</button>
+    </div>
+</form>
+{% endblock %}
