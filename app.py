@@ -1463,7 +1463,7 @@ def login():
                 if request.form.get("user_type") == "2":  # 3 - Doctor
                     table_patient = t_doctor(
                         request.form.get("username"),
-                        "To_Fill",
+                        request.form.get("username"),
                         "To_Fill",
                         "To_Fill",
                         "To_Fill",
@@ -1474,7 +1474,7 @@ def login():
                 elif request.form.get("user_type") == "3":  # 3 - Patient
                     table_patient = t_patient(
                         request.form.get("username"),
-                        "To_Fill",
+                        request.form.get("username"),
                         "To_Fill",
                         "To_Fill",
                         "To_Fill",
@@ -1683,6 +1683,7 @@ def admin_root():
         elif button_name == "viewDoctor":  # Login button is clicked
             return render_template(
                 "view.html",
+                user_type=session["user_type"],
                 heading=(
                     "Doctor ID",
                     "Name",
