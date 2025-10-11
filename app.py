@@ -1,3 +1,4 @@
+import random
 from datetime import datetime, timedelta
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
@@ -12,10 +13,15 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 app.app_context().push()
-#####################################################################
+sessionId = random.random()
 
+@app.before_request
+def before_request():
+    session.permanent = True  # Makes the session non-permanent
+    app.permanent_session_lifetime = timedelta(
+        seconds=120
+    )  # Session expires immediately when the browser is closed
 
-#####################################################################
 # Global Variables
 #####################################################################
 class t_user(db.Model):
@@ -119,19 +125,6 @@ class t_appointment(db.Model):
         self.diagnosis = diagnosis
         self.prescription = prescription
         self.notes = notes
-
-
-#####################################################################
-# @app.context_processor
-# def test():
-#     return "1"
-# def utility_processor():
-#     def test():
-#         return f"1"
-
-#     return dict(test=test)
-
-
 #####################################################################
 # Home
 #####################################################################
@@ -139,6 +132,18 @@ class t_appointment(db.Model):
 def home():
     with app.app_context():
         db.create_all()
+        # ------------------------------------------------------------
+        if "sessionId" in session:
+            if sessionId == session["sessionId"]:
+                pass
+            else:
+                session["sessionId"] = sessionId
+                session.pop("username", None)
+                session["user_type"] = 0
+        else:
+            session["sessionId"] = sessionId
+            session.pop("username", None)
+            session["user_type"] = 0
         # ------------------------------------------------------------
         found_user = t_user.query.filter_by(username="admin").first()
         if not found_user:
@@ -150,6 +155,7 @@ def home():
             db.session.commit()
             # ------------------------------------------------------------
             if "username" not in session:
+                session.pop("username", None)
                 session["user_type"] = 0
             # ------------------------------------------------------------
             # user_type=0 if "user_type" not in session else session["user_type"]
@@ -1892,35 +1898,11 @@ def department_manage():
     else:  # if Patient Manage Login page is accessed using GET method, i.e., clicking on Manage Patient link
         found_user = t_patient.query.filter_by(patient_id=session["username"]).first()
 
-
-#####################################################################
-
-#####################################################################
-# @app.route("/logout")
-# def logout():
-#     session.pop("username", None)
-#     session.pop("password", None)
-#     return redirect(url_for("login"))
-#####################################################################
-# @app.route("/<name>")
-# def user(name):
-#     return f"Hello {name}"
-#####################################################################
-# @app.route("/admin")
-# def admin():
-#     return redirect(url_for("user", name="Admin"))
 #####################################################################
 # Bottom of the file
 #####################################################################
 
 if __name__ == "__main__":
     app.run(debug=True)
+#####################################################################
 
-# import sys
-
-# try:
-#     app.run(debug=True)
-# except SystemExit as e:
-#     print(f"SystemExit with code: {e.code}")
-#     app.run(debug=True)
-#     # sys.exit(e.code)
